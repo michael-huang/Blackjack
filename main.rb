@@ -21,5 +21,18 @@ post '/new_player' do
 end
 
 get '/game' do
+	# create a deck and put it in session
+	suits = ['S', 'H', 'D', 'C']
+	values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+	session[:deck] = suits.product(values).shuffle!
+
+	# deal cards
+	session[:dealer_cards] = []
+	session[:player_cards] = []
+	session[:dealer_cards] << session[:deck].pop
+	session[:player_cards] << session[:deck].pop
+	session[:dealer_cards] << session[:deck].pop
+	session[:player_cards] << session[:deck].pop
+
 	erb :game
 end
