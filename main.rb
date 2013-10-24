@@ -23,6 +23,27 @@ helpers do
 
   	total
 	end
+
+	def card_image(card)
+		suit = case card[0]
+			when 'S' then 'spades'
+			when 'H' then 'hearts'
+			when 'D' then 'diamonds'
+			when 'C' then 'clubs'
+		end
+
+		value = card[1]
+		if ['J', 'Q', 'K', 'A'].include?(value)
+			value = case card[1]
+				when 'J' then 'jack'
+				when 'Q' then 'queen'
+				when 'K' then 'king'
+				when 'A' then 'ace'
+			end
+		end
+
+		"<img src='/images/cards/#{suit}_#{value}.jpg' class='card_image' />"
+	end
 end
 
 before do
@@ -42,6 +63,10 @@ get '/new_player' do
 end
 
 post '/new_player' do
+	if params[:player_name].empty?
+		@error = "Name is required."
+		halt erb :new_player
+	end
 	session[:player_name] = params[:player_name]
 	redirect '/game'
 end
@@ -65,15 +90,20 @@ end
 
 post '/game/player/hit' do
 	session[:player_cards] << session[:deck].pop
-	if total(session[:player_cards]) > 21
-		@error = "Sorry, it seems like you busted!"
+	
+	player_total = total(session[:player_cards])
+	if player_total == 21
+		@success = "Congratulations! #{session[:player_name]}, you hit blackjack!"
+		@show_hit_or_stay_btn = false
+	elsif player_total > 21
+		@error = "Sorry, #{session[:player_name]}, it seems like you busted!"
 		@show_hit_or_stay_btn = false
 	end
 	erb :game
 end
 
 post '/game/player/stay' do
-	@success = "You have chosen to stay."
+	@success = "#{session[:player_name]}, you have chosen to stay."
 	@show_hit_or_stay_btn = false
 	erb :game
 end
