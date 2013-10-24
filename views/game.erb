@@ -13,4 +13,14 @@ Player's cards:
 		<li><%=card%></li>
 	<% end %>
 </ul>
-<p>What's your next step? <%=session[:player_name]%> got <%=total(session[:player_cards])%></p>
+<p><b><%=session[:player_name]%>, you got <%=total(session[:player_cards])%>. </b>What's your next move? </p>
+
+<% if @show_hit_or_stay_btn %>
+	<form action="/game/player/hit" method="post">
+		<input type="submit" value="Hit" class="btn" />
+	</form>
+
+	<form action="/game/player/stay" method="post">
+		<input type="submit" value="Stay" class="btn" />
+	</form>
+<% end %>
