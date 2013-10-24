@@ -5,6 +5,7 @@ set :sessions, true
 
 BLACKJACK_AMOUNT = 21
 DEALER_HIT_MIN = 17
+INIT_PLAYER_POT = 500
 
 helpers do
 	def total(cards)
@@ -51,12 +52,14 @@ helpers do
 	def winner!(msg)
 		@show_play_again = true
 		@show_hit_or_stay_btn = false
+		session[:player_pot] += session[:player_bet].to_i
 		@success = "<strong>Congratulations, #{session[:player_name]} won!</strong> <br>#{msg}"
 	end
 
 	def loser!(msg)
 		@show_play_again = true
 		@show_hit_or_stay_btn = false
+		session[:player_pot] -= session[:player_bet].to_i
 		@error = "<strong>Sorry, #{session[:player_name]} lost.</strong> <br>#{msg}"
 	end
 
@@ -81,6 +84,7 @@ get '/' do
 end
 
 get '/new_player' do
+	session[:player_pot] = INIT_PLAYER_POT
 	erb :new_player
 end
 
@@ -90,7 +94,24 @@ post '/new_player' do
 		halt erb :new_player
 	end
 	session[:player_name] = params[:player_name]
-	redirect '/game'
+	redirect '/bet'
+end
+
+get '/bet' do
+	erb :bet
+end
+
+post '/bet' do
+	if params[:player_bet] == nil || params[:player_bet].to_i <= 0
+		@error = "You must make a bet."
+		halt erb :bet
+	elsif params[:player_bet].to_i > session[:player_pot]
+		@error = "Bet amount cannot be greater than what you have ($#{session[:player_pot]})"
+		halt erb :bet
+	else
+		session[:player_bet] = params[:player_bet]
+		redirect '/game'
+	end
 end
 
 get '/game' do

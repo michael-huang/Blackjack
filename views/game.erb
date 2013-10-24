@@ -1,7 +1,7 @@
 <% if @show_play_again %>
 	<p>
 		<strong>Play again?</strong>
-		<a href="/game" class = "btn btn-primary">Yes</a>
+		<a href="/bet" class = "btn btn-primary">Yes</a>
 		<a href="/game_over" class = "btn">No</a>
 	</p>
 <% end %>
@@ -20,7 +20,7 @@
 			<%= card_image(card) %>
 		<% end %>
 	<% end %>
-	
+
 </div>
 
 <% if @show_dealer_hit_btn %>
@@ -38,7 +38,7 @@
 	<% end %>
 
 </div>
-
+<p style="color: grey"><%= session[:player_name] %> has $<%= session[:player_pot] %> total. Bet for this round: $<%= session[:player_bet] %></p>
 <p><b><%=session[:player_name]%>, you got <%=total(session[:player_cards])%>. </b>What's your next move? </p>
 
 <% if @show_hit_or_stay_btn %>
